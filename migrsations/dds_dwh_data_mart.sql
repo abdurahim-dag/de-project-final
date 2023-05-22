@@ -12,6 +12,3 @@ order by date_update
 SEGMENTED BY global_metrics_pk all nodes
 PARTITION BY date_update::date
 GROUP BY calendar_hierarchy_day(date_update::date, 3, 2);
-
--- Одна дата один отчёт.
-ALTER TABLE ST23051601__DWH.dm_global_metrics ADD UNIQUE(date_update);

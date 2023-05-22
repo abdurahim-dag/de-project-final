@@ -52,7 +52,7 @@ def transaction_stream(spark: SparkSession, options: dict) -> DataFrame:
             .format('kafka')
             .options(**options)
             .option('subscribe', TOPIC_NAME)
-            .option("startingOffsets", "earliest")
+            #.option("startingOffsets", "earliest")
             .load()
             )
 

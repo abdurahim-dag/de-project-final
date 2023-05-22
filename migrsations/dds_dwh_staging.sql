@@ -23,7 +23,7 @@ create table if not exists ST23051601__STAGING.currencies(
      id identity primary key ENABLED,
      currency_code_with VARCHAR(3) NOT NULL,
      currency_code VARCHAR(3) NOT NULL,
-     currency_code_div NUMERIC NOT NULL,
+     currency_with_div NUMERIC NOT NULL,
      date_update TIMESTAMP(0) NOT NULL
 )
 -- В стейдж слое будет поиск по id и дате

@@ -24,6 +24,6 @@ kafka_security_options = {
     'kafka.sasl.mechanism': 'SCRAM-SHA-512',
     'kafka.sasl.jaas.config': 'org.apache.kafka.common.security.scram.ScramLoginModule required username=\"consumer_producer\" password=\"Ragim1984\";',
     'kafka.bootstrap.servers': 'rc1a-t8qa66m62evas38u.mdb.yandexcloud.net:9091',
-    "kafka.ssl.truststore.location": r'C:\Users\Admin\PycharmProjects\de-project-final\src\py\truststore.jks',
+    "kafka.ssl.truststore.location": r'C:\Users\ragim\PycharmProjects\de-project-final\src\py\truststore.jks',
     "kafka.ssl.truststore.password": r'your_password'
 }
