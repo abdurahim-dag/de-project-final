@@ -1,7 +1,9 @@
-from uuid import UUID
-from pendulum import DateTime
-from dataclasses import dataclass, fields
+"""Модели загружаемых в vertica данных."""
+from dataclasses import dataclass
 from decimal import Decimal
+from uuid import UUID
+
+from pendulum import DateTime
 
 
 @dataclass
@@ -23,4 +25,3 @@ class Currency:
     currency_code: str
     currency_with_div: Decimal
     currency_code_with: str
-

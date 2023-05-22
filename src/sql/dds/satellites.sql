@@ -8,7 +8,8 @@ select
     'kafka-pg' as load_src
 from ST23051601__STAGING.currencies c
          join ST23051601__DWH.h_сurrencies as hc on c.currency_code = hc.currency_code
-         join ST23051601__DWH.h_сurrencies as hcw on c.currency_code_with = hcw.currency_code;
+         join ST23051601__DWH.h_сurrencies as hcw on c.currency_code_with = hcw.currency_code
+where c.date_update::date = CAST('{{ ts }}' AS date);
 
 INSERT INTO ST23051601__DWH.s_transaction_status(hk_h_transaction, status, status_dt, load_dt, load_src)
 select
@@ -18,4 +19,5 @@ select
     CAST('{{ ts }}' AS timestamp) as load_dt,
     'kafka-pg' as load_src
 from ST23051601__STAGING.transactions t
-         join ST23051601__DWH.h_transactions as ht on ht.operation_id = t.operation_id;
+         join ST23051601__DWH.h_transactions as ht on ht.operation_id = t.operation_id
+where t.transaction_dt::date = CAST('{{ ts }}' AS date);

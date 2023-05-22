@@ -1,19 +1,19 @@
-from staging.models import Transaction, Currency
-from airflow import DAG
-from airflow.utils.task_group import TaskGroup
-from airflow.operators.empty import EmptyOperator
 import pendulum
+from airflow import DAG
+from airflow.decorators import task
 from airflow.models.variable import Variable
-
+from airflow.operators.empty import EmptyOperator
+from airflow.utils.task_group import TaskGroup
 
 from staging.loader import Loader
-
-from airflow.decorators import task
+from staging.models import Currency
+from staging.models import Transaction
 
 
 CONNECTION_SRC = 'postgres'
 CONNECTION_DST = 'vertica_dwh'
 
+# Переменная пути откуда будем брать шаблон запроса.
 VARIABLE_SQL_PATH = 'sql_load_staging'
 
 args = {
@@ -27,7 +27,7 @@ with DAG(
         'load-messages-to-staging',
         catchup=True,
         default_args=args,
-        description='Load messages from postgress to vertica.',
+        description='Load messages from postgres to vertica.',
         is_paused_upon_creation=True,
         schedule_interval='@daily',
         start_date=pendulum.datetime(2022, 10, 1, tz="UTC"),
@@ -38,7 +38,7 @@ with DAG(
     end = EmptyOperator(task_id='end')
 
     @task()
-    def staging_load(model, src_sql, dst_sql, object_type, dst_table_name, ds) -> str:
+    def staging_load(model, src_sql, dst_sql, object_type, dst_table_name, ds) -> None:
         """Функция загрузки."""
         sql_dir = Variable.get(VARIABLE_SQL_PATH)
         dfmt = pendulum.from_format(ds, 'YYYY-MM-DD')
@@ -69,7 +69,6 @@ with DAG(
             t_staging_load = staging_load(
                 model, src_sql, dst_sql, object_type, dst_table_name, ds='{{ds}}'
             )
-
 
         groups.append(tg)
 

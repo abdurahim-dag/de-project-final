@@ -10,7 +10,8 @@ from ST23051601__STAGING.transactions t
          join ST23051601__DWH.h_transactions as h on t.operation_id = h.operation_id
          join ST23051601__DWH.h_accounts as af on t.account_number_from = af.account_number
          join ST23051601__DWH.h_accounts as at on t.account_number_to = at.account_number
-where hash(h.hk_transaction_pk) not in (select hk_l_transaction_account_pk from ST23051601__DWH.l_transaction_account);
+where hash(h.hk_transaction_pk) not in (select hk_l_transaction_account_pk from ST23051601__DWH.l_transaction_account) and
+      t.transaction_dt::date = CAST('{{ ts }}' AS date);
 
 
 INSERT INTO ST23051601__DWH.l_transaction_country(hk_l_transaction_country_pk, hk_transaction_id, hk_country_id, load_dt, load_src)
@@ -23,7 +24,8 @@ select distinct
 from ST23051601__STAGING.transactions t
          join ST23051601__DWH.h_transactions as h on t.operation_id = h.operation_id
          join ST23051601__DWH.h_countries as c on t.country = c.country_name
-where hash(h.hk_transaction_pk) not in (select hk_l_transaction_country_pk from ST23051601__DWH.l_transaction_country);
+where hash(h.hk_transaction_pk) not in (select hk_l_transaction_country_pk from ST23051601__DWH.l_transaction_country) and
+      t.transaction_dt::date = CAST('{{ ts }}' AS date);
 
 INSERT INTO ST23051601__DWH.l_transaction_currency(hk_l_transaction_currency_pk, hk_transaction_id, hk_currency_id, load_dt, load_src)
 select distinct
@@ -35,4 +37,5 @@ select distinct
 from ST23051601__STAGING.transactions t
          join ST23051601__DWH.h_transactions as h on t.operation_id = h.operation_id
          join ST23051601__DWH.h_сurrencies as c on t.currency_code = c.currency_code
-where hash(h.hk_transaction_pk) not in (select hk_l_transaction_currency_pk from ST23051601__DWH.l_transaction_currency);
+where hash(h.hk_transaction_pk) not in (select hk_l_transaction_currency_pk from ST23051601__DWH.l_transaction_currency) and
+      t.transaction_dt::date = CAST('{{ ts }}' AS date);

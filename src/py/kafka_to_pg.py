@@ -12,6 +12,7 @@ from settings import kafka_security_options
 from settings import postgresql_settings
 from settings import spark_jars_packages
 
+# Таргет таблица.
 postgresql_settings['dbtable'] = 'public.messages'
 
 
@@ -22,18 +23,6 @@ def  spark_init(name: str) -> SparkSession:
     :return: Спарк сессия.
     :rtype: SparkSession
     """
-    # return (
-    #     SparkSession.builder.master('local[*]')
-    #         .appName("KafkaStreamingApp")
-    #         .config("kafka.bootstrap.servers", "rc1a-t8qa66m62evas38u.mdb.yandexcloud.net:9091")
-    #         .config("kafka.security.protocol", "SASL_SSL")
-    #         .config("kafka.sasl.mechanism", "SCRAM-SHA-512")
-    #         .config("kafka.sasl.username", "consumer_producer")
-    #         .config("kafka.sasl.password", "Ragim1984")
-    #         .config("kafka.ssl.truststore.location", r'C:\Users\Admin\PycharmProjects\de-project-final\src\py\truststore.jks')
-    #         .config("kafka.ssl.truststore.password", r'your_password')
-    #         .getOrCreate()
-    # )
     return (SparkSession.builder.master('local[*]')
             .appName(name)
             .config("spark.sql.session.timeZone", "UTC")
@@ -42,7 +31,7 @@ def  spark_init(name: str) -> SparkSession:
 
 
 def transaction_stream(spark: SparkSession, options: dict) -> DataFrame:
-    """Читаем из топика Kafka сообщения с акциями от ресторанов.
+    """Читаем из топика Kafka сообщения.
 
     :param spark: Рабочая спарк сессия.
     :param options: Параметры подключения к PG
@@ -58,19 +47,19 @@ def transaction_stream(spark: SparkSession, options: dict) -> DataFrame:
 
 
 def message_read_stream(df: DataFrame, schema: StructType) -> DataFrame:
-    """Преобразование значений."""
+    """Чтение из потока."""
     return (df
             .withColumn('value_str', F.col('value').cast(StringType()))
             .withColumn('message', F.from_json(F.col('value_str'), schema))
             .selectExpr('message.*')
             .withColumn("payload", F.to_json(F.col("payload")))
-            # .dropDuplicates(['object_id', 'sent_dttm'])
-            # .withWatermark('sent_dttm', '1 minutes')
+            .dropDuplicates(['object_id', 'sent_dttm'])
+            .withWatermark('sent_dttm', '1 minutes')
             )
 
 
 def foreach_batch_function(df: DataFrame, epoch_id):
-    """Метод для записи данных в 2 target: в PostgreSQL для фидбэков и в Kafka для триггеров."""
+    """Метод для записи данных в PostgreSQL."""
 
     # записываем df в PostgreSQL с полем feedback
     df \
@@ -84,14 +73,14 @@ def foreach_batch_function(df: DataFrame, epoch_id):
 
 
 if __name__ == "__main__":
-    spark = spark_init('transaction stream consumer')
+    spark = spark_init('messages stream consumer')
 
     df = transaction_stream(spark, kafka_security_options)
     prepared = message_read_stream(df, message_schema)
 
     query = prepared \
         .writeStream \
-        .option("checkpointLocation", "cp_messages-4") \
+        .option("checkpointLocation", "cp_messages-0") \
         .trigger(processingTime="15 seconds") \
         .foreachBatch(foreach_batch_function) \
         .start()

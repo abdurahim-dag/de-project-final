@@ -1,16 +1,13 @@
 """Даг прогрузки слоя DDS в DWH."""
 import pendulum
-from airflow.providers.vertica.operators.vertica import VerticaOperator
-
 from airflow import DAG
-from airflow.operators.empty import EmptyOperator
 from airflow.models.variable import Variable
-from airflow.decorators import task
+from airflow.operators.empty import EmptyOperator
+from airflow.providers.vertica.operators.vertica import VerticaOperator
 
 
 connection_dwh = 'vertica_dwh'
 sql_dir = Variable.get('sql_load_dds')
-
 
 args = {
     'owner': 'ragim',

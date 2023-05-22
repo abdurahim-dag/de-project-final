@@ -1,7 +1,7 @@
+import logging
 import random
 import time
 from functools import wraps
-import logging
 
 
 def sleep_expo_gen(initial, maximum, factor):
