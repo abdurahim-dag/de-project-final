@@ -1,0 +1,5 @@
+{
+  "sql_load_staging": "/data/sql",
+  "sql_load_dds": "/data/sql/dds",
+  "sql_load_cdm": "/data/sql/cdm"
+}
