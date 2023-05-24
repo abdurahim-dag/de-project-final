@@ -8,6 +8,7 @@ from airflow.providers.vertica.operators.vertica import VerticaOperator
 
 connection_dwh = 'vertica_dwh'
 sql_dir = Variable.get('sql_load_cdm')
+sql_files = Variable.get('sql_load_cdm_files', deserialize_json=True)
 
 args = {
     'owner': 'ragim',
@@ -30,18 +31,17 @@ with DAG(
     start = EmptyOperator(task_id='start')
     end = EmptyOperator(task_id='end')
 
-    files = (
-        'dm_global_metrics.sql',
-    )
 
     tasks = []
-    for file in files:
-        t_query = VerticaOperator(
-            task_id=file[:-4],
-            sql=open(f"{sql_dir}/{file}", encoding='utf8').read(),
-            vertica_conn_id=connection_dwh,
-            dag=dag
-        )
-        tasks.append(t_query)
+    for file in sql_files:
+        with open(f"{sql_dir}/{file}", encoding='utf8') as f:
+            sql = f.read()
+            t_query = VerticaOperator(
+                task_id=file[:-4],
+                sql=sql,
+                vertica_conn_id=connection_dwh,
+                dag=dag
+            )
+            tasks.append(t_query)
 
-    start >> tasks[0] >> end
+    start >> tasks >> end

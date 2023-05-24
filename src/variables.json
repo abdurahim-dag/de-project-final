@@ -1,5 +1,7 @@
 {
   "sql_load_staging": "/data/sql",
-  "sql_load_dds": "/data/sql/dds",
-  "sql_load_cdm": "/data/sql/cdm"
+  "sql_load_dds_dir": "/data/sql/dds",
+  "sql_load_dds_files": ["hubs.sql", "links.sql", "satellites.sql"],
+  "sql_load_cdm_dir": "/data/sql/cdm",
+  "sql_load_cdm_files": ["dm_global_metrics.sql"]
 }
