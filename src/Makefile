@@ -17,3 +17,6 @@ add-connection:
     \"port\": \"6432\",\
     \"schema\": \"de\",\
 }'"
+
+gen-jks:
+	& 'C:\Program Files\Java\jre1.8.0_361\bin\keytool.exe' -importcert -alias myCA -file "C:\Users\Admin\PycharmProjects\de-project-final\CA.pem" -keystore truststore.jks -storepass your_password
